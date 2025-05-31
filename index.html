@@ -1,613 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>Cool Online CV Generator</title>
+  <link rel="stylesheet" href="styles.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-
-  <style>
-    :root {
-      --font-main: 'Inter', sans-serif;
-      --theme-bg: #ffffff;
-      --theme-text: #222;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: var(--font-main);
-    }
-
-    body {
-      background: linear-gradient(to right, #141e30, #243b55);
-      color: #fff;
-      padding: 20px;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: auto;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 40px;
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
-      font-size: 2.5rem;
-      color: #f5b041;
-    }
-
-    form {
-      background-color: rgba(255, 255, 255, 0.05);
-      padding: 20px;
-      border-radius: 15px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-      overflow-y: auto;
-      max-height: 90vh;
-    }
-
-    form label {
-      display: block;
-      margin-bottom: 15px;
-      font-weight: 600;
-    }
-
-    input,
-    textarea,
-    select {
-      width: 100%;
-      padding: 10px;
-      border: none;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      margin-top: 5px;
-      font-size: 1rem;
-    }
-
-    button {
-      margin-top: 15px;
-      padding: 12px 20px;
-      background-color: #f5b041;
-      color: #000;
-      font-weight: bold;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    button:hover {
-      background-color: #f39c12;
-    }
-
-    .cv-preview {
-      background: var(--theme-bg);
-      color: var(--theme-text);
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-      overflow: visible;
-      max-height: none;
-      width: 100%;
-      max-width: 850px;
-      margin: auto;
-    }
-
-    .cv-preview h2 {
-      color: #2e86de;
-    }
-    #cv-content {
-      width: 100%;
-      max-width: 800px;
-      margin: auto;
-    }
-
-
-    .cv-preview h3 {
-      margin-top: 20px;
-      color: #34495e;
-      page-break-before: always;
-    }
-
-    #download-btn {
-      grid-column: span 2;
-      justify-self: center;
-    }
-
-    .options {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 15px;
-      flex-wrap: wrap;
-    }
-
-    .skills-container {
-      margin-top: 5px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .skill-tag {
-      background-color: #f5b041;
-      color: black;
-      padding: 5px 12px;
-      border-radius: 15px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      user-select: none;
-    }
-
-    .section-reorder {
-      display: flex;
-      flex-direction: column;
-      margin-bottom: 15px;
-    }
-
-    .section-reorder label {
-      margin-bottom: 6px;
-      font-weight: 600;
-    }
-
-    .section-reorder select {
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      border-radius: 10px;
-      padding: 8px;
-    }
-
-    .profile-pic-preview {
-      max-width: 120px;
-      max-height: 120px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin-bottom: 15px;
-      border: 3px solid #f5b041;
-    }
-
-    @media (max-width: 768px) {
-      .container {
-        grid-template-columns: 1fr;
-      }
-    }
-    @media print {
-      .cv-preview h2 {
-        page-break-before: always;
-      }
-      .cv-preview h1,
-      .cv-preview h2,
-      .cv-preview p,
-      .cv-preview section,
-      .cv-preview .skills-container,
-      .cv-preview .skill-tag {
-      page-break-inside: avoid;
-      }
-    }
-
-    /* Prevent page breaks inside headings, paragraphs, sections, skill tags */
-.cv-preview h1, .cv-preview h2, .cv-preview p,
-.cv-preview section, .cv-preview .skills-container,
-.cv-preview .skill-tag {
-  page-break-inside: avoid;
-}
-
-.cv-preview h2 {
-  page-break-before: always;
-}
-
-    #cv-content {
-  width: 100%;
-  max-width: 850px;
-  overflow: visible !important;
-  height: auto !important;
-  }
-
-
-/* Skill tag styling */
-.skill-tag {
-  display: inline-block;
-  margin: 3px 6px 3px 0;
-  padding: 4px 10px;
-  border-radius: 15px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  user-select: none;
-}
-#font-select{
-  color: #000;
-}
-
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Merriweather&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js">
+  </script>
 </head>
+
 <body>
-  <h1>Cool Online CV Generator</h1>
-  <div class="container">
-    <form id="cv-form" enctype="multipart/form-data">
-      <div class="options">
-        <label>Font:
-          <select id="font-select">
-            <option value="Inter">Inter</option>
-            <option value="Roboto">Roboto</option>
-            <option value="Merriweather">Merriweather</option>
-          </select>
+  <h1 class="fancy-title">
+    <span>🚀</span> Cool <span class="gradient-text">Online CV</span> Generator <span>🧠</span>
+  </h1>
+
+  <div id="mode-toggle-btn" class="mode-toggle on">
+    <input type="checkbox" id="mode-toggle-checkbox" />
+    <label for="mode-toggle-checkbox" class="slider"></label>
+    <span class="toggle-text">On</span>
+  </div>
+
+  <div class="container" id="main-container">
+    <form id="cv-form">
+      <div class="profile-preview-row">
+        <label style="flex: 1;">
+          Profile Picture:
+          <input type="file" id="profile-pic" accept="image/*" />
         </label>
-        <label>Theme:
-          <select id="theme-select">
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-          </select>
+
+        <label class="checkbox-label">
+          <input type="checkbox" id="live-preview-toggle" checked />
+          <span>Live Preview</span>
         </label>
-        <label><input type="checkbox" id="live-preview" checked /> Live Preview</label>
       </div>
 
-      <label>Profile Picture:
-        <input type="file" id="profile-pic" accept="image/*" />
+      <label>Font Style:
+        <select id="font-select">
+          <option value="'Inter', sans-serif">Inter</option>
+          <option value="'Roboto', sans-serif">Roboto</option>
+          <option value="'Merriweather', serif">Merriweather</option>
+        </select>
       </label>
-      <img id="profile-pic-preview" class="profile-pic-preview" style="display:none;" alt="Profile Preview" />
+
+      <label>Template Style:
+        <select id="template-select">
+          <option value="template-classic">Classic</option>
+          <option value="template-sidebar">Modern Sidebar</option>
+          <option value="template-minimalist">Minimalist</option>
+        </select>
+      </label>
+
+      <label>Theme Color:
+        <select id="color-select">
+          <option value="theme-grey">Grey</option>
+          <option value="theme-blue">Blue</option>
+          <option value="theme-green">Green</option>
+        </select>
+      </label>
 
       <label>Name: <input type="text" id="name" required /></label>
       <label>Email: <input type="email" id="email" required /></label>
       <label>Phone: <input type="text" id="phone" /></label>
-
-      <div class="section-reorder">
-        <label>Order Sections:</label>
-        <select id="section-order">
-          <option value="summary|education|experience|skills">Summary, Education, Experience, Skills</option>
-          <option value="summary|skills|experience|education">Summary, Skills, Experience, Education</option>
-          <option value="experience|education|skills|summary">Experience, Education, Skills, Summary</option>
-        </select>
+      <div id="websites-section">
+        <label>Website Name: <input type="text" id="website-name" placeholder="e.g., Portfolio, Blog" /></label>
+        <label>Website URL: <input type="text" id="website-url" placeholder="https://example.com" /></label>
+        <button type="button" onclick="addWebsite()">Add Website</button>
+        <ul id="website-list" style="margin-top:10px;"></ul>
       </div>
-
-      <label>Custom Titles:</label>
-      <label>Summary Title: <input type="text" id="title-summary" placeholder="Summary" /></label>
-      <label>Education Title: <input type="text" id="title-education" placeholder="Education" /></label>
-      <label>Experience Title: <input type="text" id="title-experience" placeholder="Experience" /></label>
-      <label>Skills Title: <input type="text" id="title-skills" placeholder="Skills" /></label>
 
       <label>Summary: <textarea id="summary"></textarea></label>
       <label>Education: <textarea id="education"></textarea></label>
       <label>Experience: <textarea id="experience"></textarea></label>
+      <div class="form-group">
+        <label for="project-name">Project Name:</label>
+        <input type="text" id="project-name" placeholder="Enter project name">
+
+        <label for="project-link">Project Link:</label>
+        <input type="text" id="project-link" placeholder="Enter project URL">
+
+        <label for="project-desc">About Project (optional):</label>
+        <textarea id="project-desc" placeholder="Short description (optional)"></textarea>
+
+        <button type="button" onclick="addProject()">Add Project</button>
+      </div>
+
+      <ul id="project-list" style="margin-top: 10px;"></ul>
+
       <label>Skills (comma separated): <input type="text" id="skills" /></label>
 
-      <label>Social Links (optional):</label>
-      <label>LinkedIn: <input type="url" id="linkedin" placeholder="https://linkedin.com/in/yourprofile" /></label>
-      <label>GitHub: <input type="url" id="github" placeholder="https://github.com/yourusername" /></label>
-      <label>Twitter: <input type="url" id="twitter" placeholder="https://twitter.com/yourhandle" /></label>
-
-      <label>Template:
-        <select id="template-select">
-          <option value="template1">Template 1 (Classic)</option>
-          <option value="template2">Template 2 (Modern)</option>
-        </select>
-      </label>
-
-      <button type="submit">Generate CV</button>
+      <button type="button" id="reset-btn">Reset</button>
     </form>
 
-    <div class="cv-preview" id="cv-preview">
-      <div id="cv-content">
-        <p style="text-align: center; color: #999;">
-          Your CV preview will appear here...
-        </p>
+
+    <div class="cv-preview">
+      <div id="cv-content-wrapper" class="template-classic theme-grey" style="font-family:'Inter', sans-serif;">
+        <div id="profile-picture-preview"></div>
+        <div id="cv-details">
+          <p style="text-align:center; color:#777;">Your CV preview will appear here...</p>
+        </div>
       </div>
     </div>
 
-    <button id="download-btn">Download PDF</button>
+    <button id="download-btn" style="grid-column: span 2; margin: auto;">Download PDF</button>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <script>
-  const form = document.getElementById('cv-form');
-  const previewContainer = document.getElementById('cv-preview');
-  const preview = document.getElementById('cv-content');
-  const downloadBtn = document.getElementById('download-btn');
-  const fontSelect = document.getElementById('font-select');
-  const themeSelect = document.getElementById('theme-select');
-  const liveToggle = document.getElementById('live-preview');
-  const profilePicInput = document.getElementById('profile-pic');
-  const profilePicPreview = document.getElementById('profile-pic-preview');
-  const sectionOrderSelect = document.getElementById('section-order');
-  const templateSelect = document.getElementById('template-select');
-
-  // Custom Titles
-  const customTitles = {
-    summary: document.getElementById('title-summary'),
-    education: document.getElementById('title-education'),
-    experience: document.getElementById('title-experience'),
-    skills: document.getElementById('title-skills'),
-  };
-
-  let profilePicDataUrl = '';
-
-  // Show profile picture preview
-  profilePicInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (!file) {
-      profilePicPreview.style.display = 'none';
-      profilePicDataUrl = '';
-      updatePreview(); // Update preview with no pic
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      profilePicDataUrl = e.target.result;
-      profilePicPreview.src = profilePicDataUrl;
-      profilePicPreview.style.display = 'block';
-      updatePreview();
-    };
-    reader.readAsDataURL(file);
-  });
-
-  // Convert string to a color with better contrast for skill tags
-  function stringToColor(str) {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      hash = str.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    let color = '#';
-    for (let i = 0; i < 3; i++) {
-      const value = (hash >> (i * 8)) & 0xff;
-      // Limit color brightness to avoid too light or dark colors
-      const limited = Math.min(200, Math.max(50, value));
-      color += ('00' + limited.toString(16)).slice(-2);
-    }
-    return color;
-  }
-
-  // Decide text color (black or white) based on background for contrast
-  function getContrastColor(bgColor) {
-    // Remove #
-    const c = bgColor.substring(1);
-    const rgb = parseInt(c, 16);
-    const r = (rgb >> 16) & 0xff;
-    const g = (rgb >> 8) & 0xff;
-    const b = rgb & 0xff;
-    // Calculate luminance
-    const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
-    return luminance > 150 ? '#000000' : '#ffffff';
-  }
-
-  // Update preview function
-  function updatePreview() {
-    const name = document.getElementById('name').value || 'Your Name';
-    const email = document.getElementById('email').value || '';
-    const phone = document.getElementById('phone').value || '';
-    const summary = document.getElementById('summary').value || '';
-    const education = document.getElementById('education').value || '';
-    const experience = document.getElementById('experience').value || '';
-    const skillsInput = document.getElementById('skills').value || '';
-    const linkedin = document.getElementById('linkedin').value || '';
-    const github = document.getElementById('github').value || '';
-    const twitter = document.getElementById('twitter').value || '';
-
-    // Process skills to tags
-    const skillsArr = skillsInput
-      .split(',')
-      .map((s) => s.trim())
-      .filter((s) => s.length > 0);
-
-    // Section order
-    const order = sectionOrderSelect.value.split('|');
-
-    // Custom section titles with fallback
-    const titles = {
-      summary: customTitles.summary.value || 'Summary',
-      education: customTitles.education.value || 'Education',
-      experience: customTitles.experience.value || 'Experience',
-      skills: customTitles.skills.value || 'Skills',
-    };
-
-    // Templates HTML
-    const templates = {
-      template1: () => {
-        return `
-          <div style="display:flex; gap:20px; align-items:flex-start;">
-            ${
-              profilePicDataUrl
-                ? `<img src="${profilePicDataUrl}" alt="Profile Picture" style="width:120px; height:120px; border-radius:50%; object-fit:cover; border: 3px solid #f5b041;">`
-                : ''
-            }
-            <div>
-              <h1 style="font-size:2.2rem; margin-bottom:5px;">${name}</h1>
-              <p><strong>Email:</strong> ${email} ${phone ? `| <strong>Phone:</strong> ${phone}` : ''}</p>
-              <p style="margin-top:5px;">
-                ${
-                  linkedin
-                    ? `<a href="${linkedin}" target="_blank">LinkedIn</a>`
-                    : ''
-                } ${
-                  github ? `| <a href="${github}" target="_blank">GitHub</a>` : ''
-                } ${
-                  twitter ? `| <a href="${twitter}" target="_blank">Twitter</a>` : ''
-                }
-              </p>
-            </div>
-          </div>
-          <hr style="margin:15px 0; border-color:#ccc" />
-          ${order
-            .map((section) => {
-              if (section === 'summary' && summary) {
-                return `<h2>${titles.summary}</h2><p>${summary.replace(/\n/g, '<br>')}</p>`;
-              }
-              if (section === 'education' && education) {
-                return `<h2>${titles.education}</h2><p>${education.replace(/\n/g, '<br>')}</p>`;
-              }
-              if (section === 'experience' && experience) {
-                return `<h2>${titles.experience}</h2><p>${experience.replace(/\n/g, '<br>')}</p>`;
-              }
-              if (section === 'skills' && skillsArr.length) {
-                return `<h2>${titles.skills}</h2><div class="skills-container">${skillsArr
-                  .map((skill) => {
-                    const bg = stringToColor(skill);
-                    const fg = getContrastColor(bg);
-                    return `<span class="skill-tag" style="background-color:${bg}; color:${fg};">${skill}</span>`;
-                  })
-                  .join('')}</div>`;
-              }
-              return '';
-            })
-            .join('')}
-        `;
-      },
-      template2: () => {
-        return `
-          <div style="text-align:center; margin-bottom:20px;">
-            ${
-              profilePicDataUrl
-                ? `<img src="${profilePicDataUrl}" alt="Profile Picture" style="width:140px; height:140px; border-radius:50%; object-fit:cover; border: 4px solid #2e86de;">`
-                : ''
-            }
-            <h1 style="font-family:'Merriweather', serif; font-weight:700; font-size:2.6rem; margin:10px 0 5px; color:#2e86de;">${name}</h1>
-            <p style="font-size:1rem; color:#555;">
-              ${email} ${phone ? `| ${phone}` : ''}
-            </p>
-            <p style="font-size:1rem; margin-top:5px;">
-              ${
-                linkedin
-                  ? `<a href="${linkedin}" target="_blank" style="color:#2e86de; text-decoration:none;">LinkedIn</a>`
-                  : ''
-              } ${
-                github
-                  ? `| <a href="${github}" target="_blank" style="color:#2e86de; text-decoration:none;">GitHub</a>`
-                  : ''
-              } ${
-                twitter
-                  ? `| <a href="${twitter}" target="_blank" style="color:#2e86de; text-decoration:none;">Twitter</a>`
-                  : ''
-              }
-            </p>
-          </div>
-          ${order
-            .map((section) => {
-              if (section === 'summary' && summary) {
-                return `
-                  <section style="background:#f0f8ff; padding:15px 20px; border-radius:12px; margin-bottom:15px;">
-                    <h2 style="color:#2e86de; border-bottom:2px solid #2e86de; padding-bottom:6px;">${titles.summary}</h2>
-                    <p style="font-size:1rem; color:#444;">${summary.replace(/\n/g, '<br>')}</p>
-                  </section>
-                `;
-              }
-              if (section === 'education' && education) {
-                return `
-                  <section style="background:#d6eaff; padding:15px 20px; border-radius:12px; margin-bottom:15px;">
-                    <h2 style="color:#1b4f72; border-bottom:2px solid #1b4f72; padding-bottom:6px;">${titles.education}</h2>
-                    <p style="font-size:1rem; color:#444;">${education.replace(/\n/g, '<br>')}</p>
-                  </section>
-                `;
-              }
-              if (section === 'experience' && experience) {
-                return `
-                  <section style="background:#aed6f1; padding:15px 20px; border-radius:12px; margin-bottom:15px;">
-                  <h2 style="color:#154360; border-bottom:2px solid #154360; padding-bottom:6px;">${titles.experience}</h2>
-                  <p style="font-size:1rem; color:#333;">${experience.replace(/\n/g, '<br>')}</p>
-                </section>
-                `;
-              }
-              if (section === 'skills' && skillsArr.length) {
-                return `
-                  <section style="background:#d4efdf; padding:15px 20px; border-radius:12px; margin-bottom:15px;">
-                  <h2 style="color:#196f3d; border-bottom:2px solid #196f3d; padding-bottom:6px;">${titles.skills}</h2>
-                  <div class="skills-container">
-                    ${skillsArr.map(skill => {
-                      const bg = stringToColor(skill);
-                      const fg = getContrastColor(bg);
-                      return `<span class="skill-tag" style="background-color:${bg}; color:${fg};">${skill}</span>`;
-                    }).join('')}
-                  </div>
-                </section>
-              `;
-            }
-
-              return '';
-            })
-            .join('')}
-        `;
-      },
-    };
-
-    preview.innerHTML = templates[templateSelect.value]();
-
-    // Apply selected font and theme to preview container (not to whole container)
-    previewContainer.style.fontFamily = fontSelect.value;
-    previewContainer.className = `cv-preview ${themeSelect.value}`;
-  }
-
-  // Live preview on input change if toggle is on
-  form.addEventListener('input', () => {
-    if (liveToggle.checked) updatePreview();
-  });
-
-  // Update preview when changing font, theme, template or section order
-  fontSelect.addEventListener('change', updatePreview);
-  themeSelect.addEventListener('change', updatePreview);
-  templateSelect.addEventListener('change', updatePreview);
-  sectionOrderSelect.addEventListener('change', updatePreview);
-
-  // Custom titles inputs live update preview
- // Custom titles inputs live update preview
-[
-  'input', 'change'
-].forEach(evt => {
-  form.addEventListener(evt, () => {
-    if (liveToggle.checked) updatePreview();
-  });
-});
-
-
-// Initial preview update on page load
-updatePreview();
-
-// Download button functionality
-downloadBtn.addEventListener("click", () => {
-    const element = document.getElementById("cv-content");
-
-    const opt = {
-      margin:       0.5,
-      filename:     'my_cv.pdf',
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2 },
-      jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
-      pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
-    };
-
-    html2pdf().set(opt).from(element).save();
-  });
-
-
-
-  // Initial preview on page load
-  window.addEventListener('DOMContentLoaded', updatePreview);
-
-  // Download PDF of just the CV content, not the whole container
-  downloadBtn.addEventListener('click', () => {
-  const element = preview;
-  const opt = {
-    margin:       [0.5, 0.5],
-    filename:     'My_CV.pdf',
-    image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  {
-      scale: 2,
-      useCORS: true,
-      allowTaint: true,
-      scrollY: 0
-    },
-    jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
-    pagebreak:    {
-      mode: ['avoid-all', 'css', 'legacy'],
-      before: ['.cv-preview h2']
-    }
-  };
-
-  html2pdf().set(opt).from(element).save();
-});
-
-</script>
+  <script src="script.js"></script>
 </body>
+
 </html>
