@@ -310,42 +310,49 @@ input[type="file"] {
 
 
 
-@media print {
+@media (max-width: 768px) {
+    .container {
+      display: block;
+      padding: 20px;
+    }
 
-  body,
-  #cv-content-wrapper {
-    background: white !important;
-    color: black !important;
-    max-height: none !important;
-    overflow: visible !important;
-    height: auto !important
+    form, .cv-preview {
+      width: 100%;
+      margin-bottom: 30px;
+    }
+
+    #download-btn {
+      grid-column: auto;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    .template-sidebar {
+      grid-template-columns: 1fr;
+    }
+
+    .template-sidebar .sidebar,
+    .template-sidebar .main {
+      padding: 10px;
+    }
+
+    #cv-content-wrapper {
+      max-height: none;
+    }
+
+    .fancy-title {
+      font-size: 1.5rem;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    input,
+    textarea,
+    select,
+    button {
+      font-size: 1rem;
+    }
   }
-
-  .container,
-  form,
-  #download-btn,
-  #reset-btn,
-  #theme-toggle,
-  #font-select,
-  #template-select,
-  #live-preview-toggle,
-  #color-select {
-    display: none;
-  }
-
-  .sidebar-name {
-    text-align: center;
-    margin-top: 10px;
-    font-size: 1.5rem;
-    /* Adjust as needed */
-  }
-
-  .page-break {
-    page-break-before: always;
-    break-before: page;
-  }
-
-}
 
 #download-btn {
   grid-column: span 2;
