@@ -1,113 +1,1172 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
-  <title>Cool Online CV Generator</title>
-  <link rel="stylesheet" href="styles.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter&family=Roboto&family=Merriweather&display=swap"
-    rel="stylesheet" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js">
-  </script>
+  <title>ProCV — Professional Resume Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:wght@400;500;600&family=Fraunces:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #0A0B0F;
+      --ink2: #1C1D24;
+      --ink3: #2A2B36;
+      --paper: #F7F6F2;
+      --paper2: #EEECEA;
+      --accent: #E8472A;
+      --accent2: #2A47E8;
+      --gold: #C9A84C;
+      --text: #0A0B0F;
+      --text-muted: #6B6C7A;
+      --border: rgba(10,11,15,0.1);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Instrument Sans', sans-serif;
+      background: var(--paper);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ---- NAV ---- */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      padding: 18px 5vw;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(247,246,242,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.4rem;
+      letter-spacing: -1px;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a { text-decoration: none; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      background: var(--ink);
+      color: #fff;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 100px;
+      font-family: 'Instrument Sans', sans-serif;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s;
+    }
+    .nav-cta:hover { background: var(--accent); transform: scale(1.04); }
+    .nav-mobile-toggle { display: none; background: none; border: none; cursor: pointer; }
+
+    /* ---- HERO ---- */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 120px 5vw 80px;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(232,71,42,0.08) 0%, transparent 70%),
+                  radial-gradient(ellipse 60% 50% at 80% 80%, rgba(42,71,232,0.06) 0%, transparent 60%);
+    }
+
+    /* 3D floating cards */
+    .hero-floaters {
+      position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    }
+    .floater {
+      position: absolute;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.06);
+      animation: float3d linear infinite;
+      transform-style: preserve-3d;
+    }
+    .f1 { width: 180px; height: 240px; top: 15%; left: 5%; animation-duration: 12s; animation-delay: 0s; border-top: 4px solid var(--accent); }
+    .f2 { width: 160px; height: 210px; top: 20%; right: 6%; animation-duration: 15s; animation-delay: -4s; border-top: 4px solid var(--accent2); }
+    .f3 { width: 140px; height: 190px; bottom: 20%; left: 8%; animation-duration: 10s; animation-delay: -7s; border-top: 4px solid var(--gold); }
+    .f4 { width: 120px; height: 165px; bottom: 25%; right: 10%; animation-duration: 13s; animation-delay: -2s; border-top: 4px solid #0F766E; }
+
+    .floater-inner { padding: 14px; }
+    .fl-name { height: 8px; border-radius: 4px; background: var(--ink); width: 70%; margin-bottom: 6px; }
+    .fl-sub { height: 5px; border-radius: 3px; background: #ddd; width: 50%; margin-bottom: 12px; }
+    .fl-line { height: 4px; border-radius: 2px; background: #eee; margin-bottom: 5px; }
+    .fl-line.short { width: 60%; }
+    .fl-line.shorter { width: 40%; }
+    .fl-dot { width: 24px; height: 24px; border-radius: 50%; background: #f0f0f0; margin-bottom: 8px; }
+    .fl-accent { height: 4px; border-radius: 2px; margin-bottom: 5px; }
+    .fl-accent.a { background: var(--accent); width: 80%; }
+    .fl-accent.b { background: #eee; width: 55%; }
+
+    @keyframes float3d {
+      0%   { transform: translateY(0px) rotateY(0deg) rotateX(0deg); }
+      25%  { transform: translateY(-18px) rotateY(6deg) rotateX(3deg); }
+      50%  { transform: translateY(-8px) rotateY(-4deg) rotateX(-2deg); }
+      75%  { transform: translateY(-22px) rotateY(8deg) rotateX(5deg); }
+      100% { transform: translateY(0px) rotateY(0deg) rotateX(0deg); }
+    }
+
+    .hero-content { position: relative; z-index: 2; max-width: 800px; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--ink); color: #fff;
+      padding: 6px 16px; border-radius: 100px;
+      font-size: 0.78rem; font-weight: 600;
+      margin-bottom: 28px;
+      letter-spacing: 0.5px;
+      animation: fadeInUp 0.6s ease both;
+    }
+    .hero-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
+
+    h1.hero-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(3rem, 7vw, 6rem);
+      font-weight: 800;
+      line-height: 1.0;
+      letter-spacing: -3px;
+      color: var(--ink);
+      margin-bottom: 24px;
+      animation: fadeInUp 0.6s 0.1s ease both;
+    }
+    h1.hero-title em { font-style: normal; color: var(--accent); }
+    h1.hero-title .block { display: block; }
+
+    .hero-sub {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 540px;
+      margin: 0 auto 40px;
+      line-height: 1.7;
+      animation: fadeInUp 0.6s 0.2s ease both;
+    }
+
+    .hero-actions {
+      display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
+      animation: fadeInUp 0.6s 0.3s ease both;
+    }
+    .btn-hero-primary {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 16px 36px;
+      border-radius: 100px;
+      font-family: 'Instrument Sans', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 6px 24px rgba(232,71,42,0.35);
+      text-decoration: none;
+    }
+    .btn-hero-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(232,71,42,0.4); }
+    .btn-hero-secondary {
+      background: transparent;
+      color: var(--ink);
+      border: 2px solid var(--border);
+      padding: 14px 32px;
+      border-radius: 100px;
+      font-family: 'Instrument Sans', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      text-decoration: none;
+    }
+    .btn-hero-secondary:hover { border-color: var(--ink); background: var(--paper2); }
+
+    .hero-stats {
+      display: flex; gap: 48px; justify-content: center; flex-wrap: wrap;
+      margin-top: 64px;
+      padding-top: 40px;
+      border-top: 1px solid var(--border);
+      animation: fadeInUp 0.6s 0.4s ease both;
+    }
+    .stat-item { text-align: center; }
+    .stat-number { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--ink); letter-spacing: -1px; }
+    .stat-label { font-size: 0.82rem; color: var(--text-muted); margin-top: 2px; }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---- JOB CATEGORY SECTION ---- */
+    .section { padding: 100px 5vw; }
+    .section-header { text-align: center; margin-bottom: 60px; }
+    .section-tag {
+      display: inline-block;
+      background: var(--paper2);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 6px 14px; border-radius: 100px;
+      font-size: 0.78rem; font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+    }
+    h2.section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 800;
+      letter-spacing: -2px;
+      color: var(--ink);
+      margin-bottom: 16px;
+    }
+    .section-desc { color: var(--text-muted); font-size: 1.05rem; max-width: 520px; margin: 0 auto; line-height: 1.7; }
+
+    .job-categories {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 14px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .job-cat-btn {
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      padding: 24px 16px;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      background: #fff;
+      cursor: pointer;
+      transition: all 0.25s;
+      text-align: center;
+      font-family: 'Instrument Sans', sans-serif;
+    }
+    .job-cat-btn:hover, .job-cat-btn.active {
+      border-color: var(--accent);
+      background: rgba(232,71,42,0.04);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(232,71,42,0.12);
+    }
+    .job-cat-btn.active { border-color: var(--accent); }
+    .cat-icon { font-size: 2rem; }
+    .cat-name { font-weight: 600; font-size: 0.9rem; color: var(--ink); }
+    .cat-count { font-size: 0.78rem; color: var(--text-muted); }
+
+    /* ---- TEMPLATE GALLERY ---- */
+    .templates-bg { background: var(--ink); padding: 100px 5vw; }
+    .templates-bg .section-tag { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.1); }
+    .templates-bg h2.section-title { color: #fff; }
+    .templates-bg .section-desc { color: rgba(255,255,255,0.5); }
+
+    .template-filters {
+      display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+      margin-bottom: 48px;
+    }
+    .filter-btn {
+      padding: 8px 20px;
+      border-radius: 100px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: transparent;
+      color: rgba(255,255,255,0.6);
+      font-family: 'Instrument Sans', sans-serif;
+      font-weight: 500; font-size: 0.87rem;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      background: #fff; color: var(--ink);
+      border-color: #fff;
+    }
+
+    .template-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+    .tmpl-card {
+      background: var(--ink2);
+      border-radius: 20px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border: 1px solid rgba(255,255,255,0.06);
+      position: relative;
+      transform-style: preserve-3d;
+    }
+    .tmpl-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+      border-color: rgba(255,255,255,0.15);
+    }
+    .tmpl-card.featured { border-color: var(--gold); }
+    .tmpl-badge {
+      position: absolute; top: 14px; right: 14px;
+      background: var(--gold); color: var(--ink);
+      padding: 4px 10px; border-radius: 100px;
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      z-index: 2;
+    }
+    .tmpl-new { background: #4ade80; color: var(--ink); }
+    .tmpl-ieee { background: var(--accent2); color: #fff; }
+
+    /* Template Previews (visual mockups) */
+    .tmpl-preview {
+      height: 280px;
+      display: flex;
+      align-items: stretch;
+      overflow: hidden;
+      position: relative;
+    }
+    /* Executive template preview */
+    .prev-executive { background: #fff; flex-direction: column; display: flex; }
+    .prev-executive .ph { background: var(--accent); height: 70px; display: flex; align-items: center; padding: 0 16px; gap: 10px; }
+    .prev-executive .ph-avatar { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.3); flex-shrink: 0; }
+    .prev-executive .ph-text .ph-name { height: 8px; background: #fff; border-radius: 3px; width: 90px; margin-bottom: 5px; }
+    .prev-executive .ph-text .ph-title { height: 5px; background: rgba(255,255,255,0.5); border-radius: 2px; width: 60px; }
+    .prev-executive .pb { flex: 1; padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; }
+    .prev-executive .pb-section { height: 5px; background: var(--accent); border-radius: 2px; width: 55px; margin-bottom: 4px; }
+    .prev-executive .pb-line { height: 4px; background: #eee; border-radius: 2px; }
+    .prev-executive .pb-line.s { width: 70%; }
+    .prev-executive .pb-line.xs { width: 45%; }
+
+    /* Modern sidebar template */
+    .prev-modern { background: #fff; display: flex; }
+    .prev-modern .pm-left { width: 90px; background: #1C1D24; flex-shrink: 0; padding: 14px 10px; display: flex; flex-direction: column; gap: 6px; }
+    .prev-modern .pm-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--accent2); margin: 0 auto 8px; }
+    .prev-modern .pm-dot { height: 5px; border-radius: 2px; background: rgba(255,255,255,0.2); }
+    .prev-modern .pm-dot.s { width: 60%; }
+    .prev-modern .pm-accent { height: 5px; border-radius: 2px; background: var(--accent2); margin-bottom: 3px; }
+    .prev-modern .pm-right { flex: 1; padding: 14px 12px; display: flex; flex-direction: column; gap: 6px; }
+    .prev-modern .pm-title { height: 10px; background: var(--ink); border-radius: 3px; width: 80%; }
+    .prev-modern .pm-sub { height: 5px; background: var(--accent2); border-radius: 2px; width: 50%; margin-bottom: 6px; }
+    .prev-modern .pm-line { height: 4px; background: #eee; border-radius: 2px; }
+    .prev-modern .pm-line.s { width: 65%; }
+    .pm-divider { height: 1px; background: #f0f0f0; margin: 4px 0; }
+
+    /* Creative template */
+    .prev-creative { background: #fff; flex-direction: column; display: flex; }
+    .prev-creative .pc-top { height: 8px; background: linear-gradient(90deg, var(--accent) 40%, var(--accent2) 100%); }
+    .prev-creative .pc-header { padding: 12px 16px; border-bottom: 1px solid #eee; }
+    .prev-creative .pc-name { height: 11px; background: var(--ink); border-radius: 3px; width: 75%; margin-bottom: 6px; }
+    .prev-creative .pc-chips { display: flex; gap: 5px; flex-wrap: wrap; }
+    .prev-creative .pc-chip { height: 14px; border-radius: 100px; background: var(--ink); padding: 0 6px; font-size: 0; }
+    .prev-creative .pc-chip.r { background: var(--accent); width: 50px; }
+    .prev-creative .pc-chip.b { background: var(--accent2); width: 45px; }
+    .prev-creative .pc-chip.g { background: #0F766E; width: 55px; }
+    .prev-creative .pc-cols { flex: 1; display: flex; }
+    .prev-creative .pc-col1 { flex: 1; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+    .prev-creative .pc-col2 { width: 80px; background: #f9f9f9; padding: 10px 8px; border-left: 1px solid #eee; display: flex; flex-direction: column; gap: 5px; }
+    .prev-creative .pc-line { height: 4px; background: #eee; border-radius: 2px; }
+    .prev-creative .pc-line.s { width: 70%; }
+    .prev-creative .pc-sec { height: 6px; background: var(--accent); border-radius: 2px; width: 60px; }
+    .prev-creative .pc-dot2 { height: 5px; background: var(--accent2); border-radius: 2px; }
+
+    /* Minimal template */
+    .prev-minimal { background: #fff; flex-direction: column; display: flex; padding: 16px; }
+    .prev-minimal .pm2-name { height: 12px; background: var(--ink); border-radius: 3px; width: 60%; margin-bottom: 5px; }
+    .prev-minimal .pm2-title { height: 5px; background: #ccc; border-radius: 2px; width: 40%; margin-bottom: 8px; }
+    .prev-minimal .pm2-contact { display: flex; gap: 8px; margin-bottom: 10px; }
+    .prev-minimal .pm2-cc { height: 4px; background: #e0e0e0; border-radius: 2px; flex: 1; }
+    .pm2-hr { height: 1px; background: var(--ink); margin-bottom: 10px; }
+    .prev-minimal .pm2-sec { height: 5px; background: var(--ink); border-radius: 2px; width: 60px; margin-bottom: 6px; }
+    .prev-minimal .pm2-line { height: 3px; background: #eee; border-radius: 2px; margin-bottom: 4px; }
+    .prev-minimal .pm2-line.s { width: 75%; }
+
+    /* MBZUAI Academic template */
+    .prev-mbzuai { background: #fff; flex-direction: column; display: flex; }
+    .prev-mbzuai .mbz-header { padding: 12px 16px; text-align: center; border-bottom: 2px solid #003366; }
+    .prev-mbzuai .mbz-name { height: 10px; background: #003366; border-radius: 3px; width: 70%; margin: 0 auto 5px; }
+    .prev-mbzuai .mbz-contact { display: flex; gap: 4px; justify-content: center; }
+    .prev-mbzuai .mbz-dot { height: 4px; background: #888; border-radius: 2px; width: 40px; }
+    .prev-mbzuai .mbz-body { flex: 1; padding: 10px 16px; display: flex; flex-direction: column; gap: 6px; }
+    .prev-mbzuai .mbz-sec { height: 5px; background: #003366; border-radius: 2px; width: 80px; margin-bottom: 3px; }
+    .prev-mbzuai .mbz-line { height: 3px; background: #ddd; border-radius: 2px; }
+    .prev-mbzuai .mbz-line.s { width: 75%; }
+    .mbz-hr { height: 1px; background: #003366; }
+
+    /* Harshibar / Minimal-Pro template */
+    .prev-harshibar { background: #fff; flex-direction: column; display: flex; }
+    .prev-harshibar .hb-header { padding: 14px 16px 10px; border-bottom: 2px solid #222; }
+    .prev-harshibar .hb-name { height: 12px; background: #111; border-radius: 3px; width: 50%; margin-bottom: 4px; }
+    .prev-harshibar .hb-info { display: flex; gap: 6px; margin-bottom: 4px; }
+    .prev-harshibar .hb-ic { height: 4px; background: #ddd; border-radius: 2px; width: 50px; }
+    .prev-harshibar .hb-body { flex: 1; padding: 10px 16px; display: flex; flex-direction: column; gap: 5px; }
+    .prev-harshibar .hb-sec { height: 6px; background: #222; border-radius: 2px; width: 60px; margin-bottom: 4px; text-transform: uppercase; border-bottom: 1px solid #222; }
+    .prev-harshibar .hb-line { height: 3px; background: #eee; border-radius: 2px; }
+    .prev-harshibar .hb-line.s { width: 70%; }
+    .prev-harshibar .hb-job { height: 5px; background: #555; border-radius: 2px; width: 55%; }
+
+    /* IEEE Academic format */
+    .prev-ieee { background: #fff; flex-direction: column; display: flex; padding: 14px; font-size: 0; }
+    .prev-ieee .ie-title { height: 10px; background: #000; border-radius: 2px; width: 65%; margin: 0 auto 5px; }
+    .prev-ieee .ie-author { height: 6px; background: #555; border-radius: 2px; width: 45%; margin: 0 auto 8px; }
+    .prev-ieee .ie-hr { height: 1px; background: #000; margin-bottom: 8px; }
+    .prev-ieee .ie-cols { display: flex; gap: 10px; flex: 1; }
+    .prev-ieee .ie-col { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+    .prev-ieee .ie-line { height: 3px; background: #ddd; border-radius: 1px; }
+    .prev-ieee .ie-line.s { width: 80%; }
+    .prev-ieee .ie-line.xs { width: 55%; }
+    .prev-ieee .ie-vl { width: 1px; background: #ccc; flex-shrink: 0; }
+    .prev-ieee .ie-sec { height: 5px; background: #000; border-radius: 1px; width: 50%; margin-bottom: 3px; }
+
+    /* Bold template */
+    .prev-bold { background: #111; flex-direction: column; display: flex; }
+    .prev-bold .pb2-header { padding: 14px 16px; background: #000; display: flex; justify-content: space-between; align-items: center; }
+    .prev-bold .pb2-name { height: 12px; background: #fff; border-radius: 3px; width: 55%; }
+    .prev-bold .pb2-tag { height: 18px; border-radius: 4px; background: var(--accent); width: 65px; }
+    .prev-bold .pb2-body { flex: 1; display: flex; }
+    .prev-bold .pb2-main { flex: 1; padding: 10px 12px; display: flex; flex-direction: column; gap: 5px; }
+    .prev-bold .pb2-aside { width: 80px; background: rgba(255,255,255,0.05); padding: 10px 8px; display: flex; flex-direction: column; gap: 5px; }
+    .prev-bold .pb2-line { height: 3px; background: rgba(255,255,255,0.15); border-radius: 2px; }
+    .prev-bold .pb2-line.s { width: 70%; }
+    .prev-bold .pb2-acc { height: 5px; background: var(--accent); border-radius: 2px; width: 60px; }
+    .prev-bold .pb2-acc2 { height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; }
+
+    /* Elegant template */
+    .prev-elegant { background: #fff; flex-direction: column; display: flex; }
+    .prev-elegant .pe-header { padding: 14px 16px; text-align: center; }
+    .prev-elegant .pe-name { height: 11px; background: var(--ink); border-radius: 3px; width: 55%; margin: 0 auto 5px; }
+    .prev-elegant .pe-dec { width: 40px; height: 2px; background: var(--gold); margin: 5px auto; }
+    .prev-elegant .pe-title { height: 5px; background: #bbb; border-radius: 2px; width: 40%; margin: 0 auto 8px; }
+    .prev-elegant .pe-cols { flex: 1; display: flex; }
+    .prev-elegant .pe-col1 { flex: 1.5; padding: 8px 12px; display: flex; flex-direction: column; gap: 5px; }
+    .prev-elegant .pe-col2 { flex: 1; background: #fafafa; padding: 8px 10px; border-left: 1px solid #eee; display: flex; flex-direction: column; gap: 4px; }
+    .prev-elegant .pe-line { height: 3px; background: #eee; border-radius: 2px; }
+    .prev-elegant .pe-line.s { width: 75%; }
+    .prev-elegant .pe-sec { height: 5px; background: var(--gold); border-radius: 2px; width: 50px; }
+
+    .tmpl-info {
+      padding: 18px 20px;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .tmpl-info-top { display: flex; align-items: center; justify-content: space-between; }
+    .tmpl-name { color: #fff; font-weight: 700; font-size: 1rem; }
+    .tmpl-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+    .tmpl-tag {
+      font-size: 0.7rem; color: rgba(255,255,255,0.5);
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 2px 8px; border-radius: 100px;
+    }
+    .tmpl-desc { color: rgba(255,255,255,0.4); font-size: 0.82rem; line-height: 1.5; }
+    .tmpl-use-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--accent); color: #fff;
+      border: none; padding: 10px 20px;
+      border-radius: 100px;
+      font-family: 'Instrument Sans', sans-serif;
+      font-weight: 600; font-size: 0.85rem;
+      cursor: pointer;
+      transition: transform 0.2s;
+      margin-top: 6px;
+      text-decoration: none;
+      width: fit-content;
+    }
+    .tmpl-use-btn:hover { transform: scale(1.05); }
+
+    /* ---- HOW IT WORKS ---- */
+    .how-section { background: var(--paper); padding: 100px 5vw; }
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 32px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .step-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 32px 28px;
+      border: 1px solid var(--border);
+      transition: transform 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .step-card::before {
+      content: attr(data-num);
+      position: absolute; top: -10px; right: 24px;
+      font-family: 'Syne', sans-serif;
+      font-size: 5rem; font-weight: 800;
+      color: var(--paper2); line-height: 1;
+      pointer-events: none;
+    }
+    .step-card:hover { transform: translateY(-4px); }
+    .step-icon { font-size: 2rem; margin-bottom: 16px; }
+    .step-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.15rem; margin-bottom: 10px; color: var(--ink); }
+    .step-desc { color: var(--text-muted); font-size: 0.9rem; line-height: 1.7; }
+
+    /* ---- FOOTER ---- */
+    footer {
+      background: var(--ink);
+      color: rgba(255,255,255,0.5);
+      padding: 60px 5vw 40px;
+      text-align: center;
+    }
+    .footer-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.6rem;
+      color: #fff;
+      letter-spacing: -1px;
+      margin-bottom: 16px;
+    }
+    .footer-logo span { color: var(--accent); }
+    footer p { font-size: 0.88rem; }
+
+    /* ---- SCROLL REVEAL ---- */
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ---- MOBILE ---- */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-mobile-toggle { display: block; }
+      .nav-links.open {
+        display: flex; flex-direction: column;
+        position: fixed; top: 60px; left: 0; right: 0;
+        background: var(--paper);
+        padding: 24px;
+        border-bottom: 1px solid var(--border);
+        gap: 20px;
+        z-index: 190;
+      }
+      .hero-floaters { display: none; }
+      h1.hero-title { letter-spacing: -2px; }
+      .hero-stats { gap: 28px; }
+      .job-categories { grid-template-columns: repeat(3, 1fr); }
+      .template-gallery { grid-template-columns: 1fr; }
+      .steps-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 480px) {
+      .job-categories { grid-template-columns: repeat(2, 1fr); }
+      .hero-actions { flex-direction: column; align-items: center; }
+      .btn-hero-primary, .btn-hero-secondary { width: 100%; max-width: 280px; text-align: center; }
+    }
+  </style>
 </head>
-
 <body>
-  <h1 class="fancy-title">
-    <span>🚀</span> Cool <span class="gradient-text">Online CV</span> Generator <span>🧠</span>
-  </h1>
 
-  <div id="mode-toggle-btn" class="mode-toggle on">
-    <input type="checkbox" id="mode-toggle-checkbox" />
-    <label for="mode-toggle-checkbox" class="slider"></label>
-    <span class="toggle-text">On</span>
-  </div>
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="#">Pro<span>CV</span></a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#job-categories">Categories</a></li>
+      <li><a href="#templates">Templates</a></li>
+      <li><a href="#how-it-works">How It Works</a></li>
+    </ul>
+    <button class="nav-cta" onclick="document.getElementById('templates').scrollIntoView({behavior:'smooth'})">Browse Templates</button>
+    <button class="nav-mobile-toggle" onclick="document.getElementById('nav-links').classList.toggle('open')" aria-label="Menu">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect y="4" width="22" height="2" rx="1" fill="#0A0B0F"/><rect y="10" width="16" height="2" rx="1" fill="#0A0B0F"/><rect y="16" width="20" height="2" rx="1" fill="#0A0B0F"/></svg>
+    </button>
+  </nav>
 
-  <div class="container" id="main-container">
-    <form id="cv-form">
-      <div class="profile-preview-row">
-        <label style="flex: 1;">
-          Profile Picture:
-          <input type="file" id="profile-pic" accept="image/*" />
-        </label>
-
-        <label class="checkbox-label">
-          <input type="checkbox" id="live-preview-toggle" checked />
-          <span>Live Preview</span>
-        </label>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-floaters">
+      <!-- Floater 1: Executive look -->
+      <div class="floater f1">
+        <div class="floater-inner">
+          <div class="fl-dot"></div>
+          <div class="fl-name"></div>
+          <div class="fl-sub"></div>
+          <div class="fl-accent a"></div>
+          <div class="fl-accent b"></div>
+          <div class="fl-line"></div>
+          <div class="fl-line short"></div>
+          <div class="fl-line shorter"></div>
+        </div>
       </div>
-
-      <label>Font Style:
-        <select id="font-select">
-          <option value="'Inter', sans-serif">Inter</option>
-          <option value="'Roboto', sans-serif">Roboto</option>
-          <option value="'Merriweather', serif">Merriweather</option>
-        </select>
-      </label>
-
-      <label>Template Style:
-        <select id="template-select">
-          <option value="template-classic">Classic</option>
-          <option value="template-sidebar">Modern Sidebar</option>
-          <option value="template-minimalist">Minimalist</option>
-        </select>
-      </label>
-
-      <label>Theme Color:
-        <select id="color-select">
-          <option value="theme-grey">Grey</option>
-          <option value="theme-blue">Blue</option>
-          <option value="theme-green">Green</option>
-        </select>
-      </label>
-
-      <label>Name: <input type="text" id="name" required /></label>
-      <label>Email: <input type="email" id="email" required /></label>
-      <label>Phone: <input type="text" id="phone" /></label>
-      <div id="websites-section">
-        <label>Website Name: <input type="text" id="website-name" placeholder="e.g., Portfolio, Blog" /></label>
-        <label>Website URL: <input type="text" id="website-url" placeholder="https://example.com" /></label>
-        <button type="button" onclick="addWebsite()">Add Website</button>
-        <ul id="website-list" style="margin-top:10px;"></ul>
+      <!-- Floater 2: Modern look -->
+      <div class="floater f2">
+        <div class="floater-inner">
+          <div class="fl-name" style="background:var(--accent2)"></div>
+          <div class="fl-sub"></div>
+          <div class="fl-line"></div>
+          <div class="fl-line short"></div>
+          <div class="fl-line shorter"></div>
+          <div class="fl-accent a" style="background:var(--accent2)"></div>
+          <div class="fl-line"></div>
+        </div>
       </div>
-
-      <label>Summary: <textarea id="summary"></textarea></label>
-      <label>Education: <textarea id="education"></textarea></label>
-      <label>Experience: <textarea id="experience"></textarea></label>
-      <div class="form-group">
-        <label for="project-name">Project Name:</label>
-        <input type="text" id="project-name" placeholder="Enter project name">
-
-        <label for="project-link">Project Link:</label>
-        <input type="text" id="project-link" placeholder="Enter project URL">
-
-        <label for="project-desc">About Project (optional):</label>
-        <textarea id="project-desc" placeholder="Short description (optional)"></textarea>
-
-        <button type="button" onclick="addProject()">Add Project</button>
+      <!-- Floater 3: Gold -->
+      <div class="floater f3">
+        <div class="floater-inner">
+          <div class="fl-name" style="background:var(--ink)"></div>
+          <div class="fl-sub"></div>
+          <div class="fl-accent a" style="background:var(--gold)"></div>
+          <div class="fl-line"></div>
+          <div class="fl-line shorter"></div>
+        </div>
       </div>
-
-      <ul id="project-list" style="margin-top: 10px;"></ul>
-
-      <label>Skills (comma separated): <input type="text" id="skills" /></label>
-
-      <button type="button" id="reset-btn">Reset</button>
-    </form>
-
-
-    <div class="cv-preview">
-      <div id="cv-content-wrapper" class="template-classic theme-grey" style="font-family:'Inter', sans-serif;">
-        <div id="profile-picture-preview"></div>
-        <div id="cv-details">
-          <p style="text-align:center; color:#777;">Your CV preview will appear here...</p>
+      <!-- Floater 4 -->
+      <div class="floater f4">
+        <div class="floater-inner">
+          <div class="fl-name" style="background:#0F766E"></div>
+          <div class="fl-sub"></div>
+          <div class="fl-line"></div>
+          <div class="fl-line short"></div>
         </div>
       </div>
     </div>
 
-    <button id="download-btn" style="grid-column: span 2; margin: auto;">Download PDF</button>
-  </div>
+    <div class="hero-content">
+      <div class="hero-badge">
+        <div class="dot"></div>
+        Professional Resume Builder — Free, No signup needed
+      </div>
+      <h1 class="hero-title">
+        Build your<br><em>perfect CV</em><br>
+        <span class="block" style="font-size:0.65em; letter-spacing:-1px; color: var(--text-muted); font-weight:600;">in minutes, not hours</span>
+      </h1>
+      <p class="hero-sub">
+        Choose from 9+ professionally designed templates. Customize every detail. Download as a pixel-perfect PDF instantly.
+      </p>
+      <div class="hero-actions">
+        <a class="btn-hero-primary" href="#job-categories">Start Building →</a>
+        <a class="btn-hero-secondary" href="#templates">Browse Templates</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-number">9+</div>
+          <div class="stat-label">Templates</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">100%</div>
+          <div class="stat-label">Free to Use</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">PDF</div>
+          <div class="stat-label">Export Ready</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">IEEE</div>
+          <div class="stat-label">Format Supported</div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  <script src="script.js"></script>
+  <!-- JOB CATEGORIES -->
+  <section class="section" id="job-categories">
+    <div class="section-header reveal">
+      <div class="section-tag">Step 1 — Choose Your Field</div>
+      <h2 class="section-title">What's your profession?</h2>
+      <p class="section-desc">Select your field to see the most recommended templates for your industry.</p>
+    </div>
+    <div class="job-categories reveal">
+      <button class="job-cat-btn active" data-category="all" onclick="filterByCategory(this, 'all')">
+        <span class="cat-icon">⭐</span>
+        <span class="cat-name">All Templates</span>
+        <span class="cat-count">9 templates</span>
+      </button>
+      <button class="job-cat-btn" data-category="tech" onclick="filterByCategory(this, 'tech')">
+        <span class="cat-icon">💻</span>
+        <span class="cat-name">Technology</span>
+        <span class="cat-count">Software, Dev, IT</span>
+      </button>
+      <button class="job-cat-btn" data-category="academic" onclick="filterByCategory(this, 'academic')">
+        <span class="cat-icon">🎓</span>
+        <span class="cat-name">Academic</span>
+        <span class="cat-count">Research, PhD</span>
+      </button>
+      <button class="job-cat-btn" data-category="business" onclick="filterByCategory(this, 'business')">
+        <span class="cat-icon">💼</span>
+        <span class="cat-name">Business</span>
+        <span class="cat-count">Finance, MBA</span>
+      </button>
+      <button class="job-cat-btn" data-category="creative" onclick="filterByCategory(this, 'creative')">
+        <span class="cat-icon">🎨</span>
+        <span class="cat-name">Creative</span>
+        <span class="cat-count">Design, Media</span>
+      </button>
+      <button class="job-cat-btn" data-category="healthcare" onclick="filterByCategory(this, 'healthcare')">
+        <span class="cat-icon">🏥</span>
+        <span class="cat-name">Healthcare</span>
+        <span class="cat-count">Medicine, Nursing</span>
+      </button>
+      <button class="job-cat-btn" data-category="engineering" onclick="filterByCategory(this, 'engineering')">
+        <span class="cat-icon">⚙️</span>
+        <span class="cat-name">Engineering</span>
+        <span class="cat-count">Mechanical, EE</span>
+      </button>
+      <button class="job-cat-btn" data-category="law" onclick="filterByCategory(this, 'law')">
+        <span class="cat-icon">⚖️</span>
+        <span class="cat-name">Law & Policy</span>
+        <span class="cat-count">Legal, Government</span>
+      </button>
+      <button class="job-cat-btn" data-category="marketing" onclick="filterByCategory(this, 'marketing')">
+        <span class="cat-icon">📣</span>
+        <span class="cat-name">Marketing</span>
+        <span class="cat-count">Brand, Growth</span>
+      </button>
+    </div>
+    <div style="text-align:center; margin-top:40px;">
+      <a class="btn-hero-primary" href="#templates">See Recommended Templates ↓</a>
+    </div>
+  </section>
+
+  <!-- TEMPLATES GALLERY -->
+  <section class="templates-bg" id="templates">
+    <div class="section-header reveal">
+      <div class="section-tag">Step 2 — Pick a Template</div>
+      <h2 class="section-title" style="color:#fff">Choose your design</h2>
+      <p class="section-desc">Every template is fully editable. Pick one and make it yours.</p>
+    </div>
+
+    <div class="template-filters reveal" id="template-filters">
+      <button class="filter-btn active" onclick="filterTemplates(this, 'all')">All</button>
+      <button class="filter-btn" onclick="filterTemplates(this, 'classic')">Classic</button>
+      <button class="filter-btn" onclick="filterTemplates(this, 'modern')">Modern</button>
+      <button class="filter-btn" onclick="filterTemplates(this, 'academic')">Academic</button>
+      <button class="filter-btn" onclick="filterTemplates(this, 'creative')">Creative</button>
+      <button class="filter-btn" onclick="filterTemplates(this, 'ieee')">IEEE Format</button>
+    </div>
+
+    <div class="template-gallery" id="template-gallery">
+
+      <!-- EXECUTIVE -->
+      <div class="tmpl-card reveal" data-tags="classic all business engineering law healthcare">
+        <div class="tmpl-preview">
+          <div class="prev-executive" style="width:100%">
+            <div class="ph">
+              <div class="ph-avatar"></div>
+              <div class="ph-text">
+                <div class="ph-name"></div>
+                <div class="ph-title"></div>
+              </div>
+            </div>
+            <div class="pb">
+              <div class="pb-section"></div>
+              <div class="pb-line"></div>
+              <div class="pb-line s"></div>
+              <div class="pb-line xs"></div>
+              <div class="pb-section" style="margin-top:8px"></div>
+              <div class="pb-line"></div>
+              <div class="pb-line s"></div>
+              <div class="pb-section" style="margin-top:8px"></div>
+              <div class="pb-line"></div>
+              <div class="pb-line xs"></div>
+            </div>
+          </div>
+        </div>
+        <div class="tmpl-info">
+          <div class="tmpl-info-top">
+            <span class="tmpl-name">Executive</span>
+            <div class="tmpl-tags"><span class="tmpl-tag">Classic</span><span class="tmpl-tag">Business</span></div>
+          </div>
+          <p class="tmpl-desc">Bold header with clean two-section layout. Ideal for management, C-suite, and senior roles.</p>
+          <a class="tmpl-use-btn" href="builder.html?template=executive">Use Template →</a>
+        </div>
+      </div>
+
+      <!-- MODERN SIDEBAR -->
+      <div class="tmpl-card reveal featured" data-tags="modern all tech creative marketing">
+        <div class="tmpl-badge">Popular</div>
+        <div class="tmpl-preview">
+          <div class="prev-modern" style="width:100%">
+            <div class="pm-left">
+              <div class="pm-avatar"></div>
+              <div class="pm-accent"></div>
+              <div class="pm-dot"></div>
+              <div class="pm-dot s"></div>
+              <div class="pm-accent" style="margin-top:10px"></div>
+              <div class="pm-dot"></div>
+              <div class="pm-dot s"></div>
+              <div class="pm-accent" style="margin-top:10px"></div>
+              <div class="pm-dot"></div>
+            </div>
+            <div class="pm-right">
+              <div class="pm-title"></div>
+              <div class="pm-sub"></div>
+              <div class="pm-line"></div>
+              <div class="pm-line s"></div>
+              <div class="pm-divider"></div>
+              <div class="pm-line"></div>
+              <div class="pm-line s"></div>
+              <div class="pm-line"></div>
+              <div class="pm-divider"></div>
+              <div class="pm-line"></div>
+              <div class="pm-line s"></div>
+            </div>
+          </div>
+        </div>
+        <div class="tmpl-info">
+          <div class="tmpl-info-top">
+            <span class="tmpl-name">Modern Sidebar</span>
+            <div class="tmpl-tags"><span class="tmpl-tag">Modern</span><span class="tmpl-tag">Tech</span></div>
+          </div>
+          <p class="tmpl-desc">Dark sidebar with colorful accents. Perfect for developers, designers, and creative technologists.</p>
+          <a class="tmpl-use-btn" href="builder.html?template=modern">Use Template →</a>
+        </div>
+      </div>
+
+      <!-- CREATIVE -->
+      <div class="tmpl-card reveal" data-tags="creative all marketing creative">
+        <div class="tmpl-preview">
+          <div class="prev-creative" style="width:100%">
+            <div class="pc-top"></div>
+            <div class="pc-header">
+              <div class="pc-name"></div>
+              <div class="pc-chips">
+                <div class="pc-chip r"></div>
+                <div class="pc-chip b"></div>
+                <div class="pc-chip g"></div>
+              </div>
+            </div>
+            <div class="pc-cols">
+              <div class="pc-col1">
+                <div class="pc-sec"></div>
+                <div class="pc-line"></div>
+                <div class="pc-line s"></div>
+                <div class="pc-sec" style="margin-top:8px"></div>
+                <div class="pc-line"></div>
+                <div class="pc-line s"></div>
+              </div>
+              <div class="pc-col2">
+                <div class="pc-dot2"></div>
+                <div class="pc-dot2" style="background:#eee"></div>
+                <div class="pc-dot2" style="background:#eee"></div>
+                <div class="pc-dot2" style="margin-top:8px"></div>
+                <div class="pc-dot2" style="background:#eee"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tmpl-info">
+          <div class="tmpl-info-top">
+            <span class="tmpl-name">Creative</span>
+            <div class="tmpl-tags"><span class="tmpl-tag">Creative</span><span class="tmpl-tag">Design</span></div>
+          </div>
+          <p class="tmpl-desc">Vibrant gradient bar, skill chips, and two-column layout. For creative portfolios and media roles.</p>
+          <a class="tmpl-use-btn" href="builder.html?template=creative">Use Template →</a>
+        </div>
+      </div>
+
+      <!-- MINIMAL -->
+      <div class="tmpl-card reveal" data-tags="classic all academic tech">
+        <div class="tmpl-preview">
+          <div class="prev-minimal" style="width:100%">
+            <div class="pm2-name"></div>
+            <div class="pm2-title"></div>
+            <div class="pm2-contact">
+              <div class="pm2-cc"></div>
+              <div class="pm2-cc"></div>
+              <div class="pm2-cc"></div>
+            </div>
+            <div class="pm2-hr"></div>
+            <div class="pm2-sec"></div>
+            <div class="pm2-line"></div>
+            <div class="pm2-line s"></div>
+            <div class="pm2-sec" style="margin-top:12px"></div>
+            <div class="pm2-line"></div>
+            <div class="pm2-line s"></div>
+            <div class="pm2-line"></div>
+            <div class="pm2-sec" style="margin-top:12px"></div>
+            <div class="pm2-line"></div>
+          </div>
+        </div>
+        <div class="tmpl-info">
+          <div class="tmpl-info-top">
+            <span class="tmpl-name">Minimal</span>
+            <div class="tmpl-tags"><span class="tmpl-tag">Classic</span><span class="tmpl-tag">Clean</span></div>
+          </div>
+          <p class="tmpl-desc">Ultra-clean typography-driven layout. Lets your content speak — ideal for academia and tech.</p>
+          <a class="tmpl-use-btn" href="builder.html?template=minimal">Use Template →</a>
+        </div>
+      </div>
+
+      <!-- MBZUAI ACADEMIC (from PDF) -->
+      <div class="tmpl-card reveal featured" data-tags="academic all engineering tech">
+        <div class="tmpl-badge" style="background:var(--accent2);color:#fff">Academic</div>
+        <div class="tmpl-preview">
+          <div class="prev-mbzuai" style="width:100%">
+            <div class="mbz-header">
+              <div class="mbz-name"></div>
+              <div class="mbz-contact">
+                <div class="mbz-dot"></div>
+                <div class="mbz-dot"></div>
+                <div class="mbz-dot"></div>
+              </div>
+            </div>
+            <div class="mbz-body">
+              <div style="height:4px;background:#003366;border-radius:2px;width:100%;margin-bottom:8px;"></div>
+              <div class="mbz-sec"></div>
+              <div class="mbz-line"></div>
+              <div class="mbz-line s"></div>
+              <div class="mbz-hr" style="margin:6px 0"></div>
+              <div class="mbz-sec"></div>
+              <div class="mbz-line"></div>
+              <div class="mbz-line s"></div>
+              <div class="mbz-hr" style="margin:6px 0"></div>
+              <div class="mbz-sec"></div>
+              <div class="mbz-line"></div>
+            </div>
+          </div>
+        </div>
+        <div class="tmpl-info">
+          <div class="tmpl-info-top">
+            <span class="tmpl-name">MBZUAI Academic</span>
+            <div class="tmpl-tags"><span class="tmpl-tag">Academic</span><span class="tmpl-tag">Research</span></div>
+          </div>
+          <p class="tmpl-desc">Based on the MBZUAI robotics researcher template. Includes publications, thesis, coursework sections.</p>
+          <a class="tmpl-use-btn" href="builder.html?template=mbzuai">Use Template →</a>
+        </div>
+      </div>
+
+      <!-- HARSHIBAR (from PDF) -->
+      <div class="tmpl-card reveal" data-tags="modern all tech creative marketing">
+        <div class="tmpl-badge tmpl-new">New</div>
+        <div class="tmpl-preview">
+          <div class="prev-harshibar" style="width:100%">
+            <div class="hb-header">
+              <div class="hb-name"></div>
+              <div class="hb-info">
+                <div class="hb-ic"></div>
+                <div class="hb-ic"></div>
+                <div class="hb-ic"></div>
+              </div>
+            </div>
+            <div class="hb-body">
+              <div class="hb-sec"></div>
+              <div class="hb-job"></div>
+              <div class="hb-line"></div>
+              <div class="hb-line s"></div>
+              <div class="hb-sec" style="margin-top:10px"></div>
+              <div class="hb-job"></div>
+              <div class="hb-line"></div>
+              <div class="hb-line s"></div>
+              <div class="hb-sec" style="margin-top:10px"></div>
+              <div class="hb-line"></div>
+            </div>
+          </div>
+        </div>
+        <div class="tmpl-info">
+          <div class="tmpl-info-top">
+            <span class="tmpl-name">Pro Minimal</span>
+            <div class="tmpl-tags"><span class="tmpl-tag">Modern</span><span class="tmpl-tag">Tech</span></div>
+          </div>
+          <p class="tmpl-desc">Inspired by the Harshibar format. Clean ruled-header style — popular in Silicon Valley tech applications.</p>
+          <a class="tmpl-use-btn" href="builder.html?template=harshibar">Use Template →</a>
+        </div>
+      </div>
+
+      <!-- IEEE FORMAT -->
+      <div class="tmpl-card reveal" data-tags="ieee academic">
+        <div class="tmpl-badge tmpl-ieee">IEEE</div>
+        <div class="tmpl-preview">
+          <div class="prev-ieee" style="width:100%;display:flex;flex-direction:column;">
+            <div class="ie-title"></div>
+            <div class="ie-author"></div>
+            <div class="ie-hr"></div>
+            <div class="ie-cols" style="flex:1">
+              <div class="ie-col">
+                <div class="ie-sec"></div>
+                <div class="ie-line"></div>
+                <div class="ie-line s"></div>
+                <div class="ie-line xs"></div>
+                <div class="ie-line"></div>
+                <div class="ie-sec" style="margin-top:8px"></div>
+                <div class="ie-line"></div>
+                <div class="ie-line s"></div>
+              </div>
+              <div class="ie-vl"></div>
+              <div class="ie-col">
+                <div class="ie-sec"></div>
+                <div class="ie-line"></div>
+                <div class="ie-line xs"></div>
+                <div class="ie-line s"></div>
+                <div class="ie-line"></div>
+                <div class="ie-sec" style="margin-top:8px"></div>
+                <div class="ie-line"></div>
+                <div class="ie-line s"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tmpl-info">
+          <div class="tmpl-info-top">
+            <span class="tmpl-name">IEEE Format</span>
+            <div class="tmpl-tags"><span class="tmpl-tag">IEEE</span><span class="tmpl-tag">Academic</span></div>
+          </div>
+          <p class="tmpl-desc">Two-column IEEE conference-style CV. Includes abstract, publications, research interests, affiliations.</p>
+          <a class="tmpl-use-btn" href="builder.html?template=ieee">Use Template →</a>
+        </div>
+      </div>
+
+      <!-- BOLD -->
+      <div class="tmpl-card reveal" data-tags="modern all creative marketing">
+        <div class="tmpl-preview">
+          <div class="prev-bold" style="width:100%">
+            <div class="pb2-header">
+              <div class="pb2-name"></div>
+              <div class="pb2-tag"></div>
+            </div>
+            <div class="pb2-body">
+              <div class="pb2-main">
+                <div class="pb2-acc"></div>
+                <div class="pb2-line"></div>
+                <div class="pb2-line s"></div>
+                <div class="pb2-acc" style="margin-top:10px"></div>
+                <div class="pb2-line"></div>
+                <div class="pb2-line s"></div>
+              </div>
+              <div class="pb2-aside">
+                <div class="pb2-acc2"></div>
+                <div class="pb2-line"></div>
+                <div class="pb2-acc2" style="margin-top:8px"></div>
+                <div class="pb2-line"></div>
+                <div class="pb2-acc2" style="margin-top:8px"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tmpl-info">
+          <div class="tmpl-info-top">
+            <span class="tmpl-name">Bold Dark</span>
+            <div class="tmpl-tags"><span class="tmpl-tag">Modern</span><span class="tmpl-tag">Bold</span></div>
+          </div>
+          <p class="tmpl-desc">Dark high-contrast header with aside column. Makes a dramatic first impression for creative fields.</p>
+          <a class="tmpl-use-btn" href="builder.html?template=bold">Use Template →</a>
+        </div>
+      </div>
+
+      <!-- ELEGANT -->
+      <div class="tmpl-card reveal" data-tags="classic all business law healthcare">
+        <div class="tmpl-preview">
+          <div class="prev-elegant" style="width:100%">
+            <div class="pe-header">
+              <div class="pe-name"></div>
+              <div class="pe-dec"></div>
+              <div class="pe-title"></div>
+            </div>
+            <div class="pe-cols">
+              <div class="pe-col1">
+                <div class="pe-sec"></div>
+                <div class="pe-line"></div>
+                <div class="pe-line s"></div>
+                <div class="pe-sec" style="margin-top:10px"></div>
+                <div class="pe-line"></div>
+                <div class="pe-line s"></div>
+                <div class="pe-line"></div>
+              </div>
+              <div class="pe-col2">
+                <div class="pe-sec"></div>
+                <div class="pe-line"></div>
+                <div class="pe-line s"></div>
+                <div class="pe-sec" style="margin-top:10px"></div>
+                <div class="pe-line"></div>
+                <div class="pe-line s"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tmpl-info">
+          <div class="tmpl-info-top">
+            <span class="tmpl-name">Elegant</span>
+            <div class="tmpl-tags"><span class="tmpl-tag">Classic</span><span class="tmpl-tag">Luxury</span></div>
+          </div>
+          <p class="tmpl-desc">Centered heading with gold accent bar and sophisticated two-column body. For finance, law, consulting.</p>
+          <a class="tmpl-use-btn" href="builder.html?template=elegant">Use Template →</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how-section" id="how-it-works">
+    <div class="section-header reveal">
+      <div class="section-tag">How It Works</div>
+      <h2 class="section-title">Three steps to your dream CV</h2>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card reveal" data-num="01">
+        <div class="step-icon">🎯</div>
+        <div class="step-title">Choose Your Template</div>
+        <p class="step-desc">Browse our curated library. Filter by profession or style. Each template is professionally designed for maximum impact.</p>
+      </div>
+      <div class="step-card reveal" data-num="02">
+        <div class="step-icon">✍️</div>
+        <div class="step-title">Fill In Your Details</div>
+        <p class="step-desc">Our editor makes it effortless. Add experience, education, skills, projects and links. Use AI to enhance your summary.</p>
+      </div>
+      <div class="step-card reveal" data-num="03">
+        <div class="step-icon">⬇️</div>
+        <div class="step-title">Download & Apply</div>
+        <p class="step-desc">Export a pixel-perfect PDF instantly. No watermarks, no subscriptions. Your CV, ready to impress recruiters.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">Pro<span>CV</span></div>
+    <p>Build beautiful resumes for free. No signup required.</p>
+    <p style="margin-top:16px; font-size:0.78rem; opacity:0.4;">© 2025 ProCV — All templates included.</p>
+  </footer>
+
+  <script>
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Category filter
+    function filterByCategory(btn, category) {
+      document.querySelectorAll('.job-cat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('templates').scrollIntoView({ behavior: 'smooth' });
+      // map category to filter
+      const map = { all:'all', tech:'modern', academic:'academic', business:'classic', creative:'creative', healthcare:'classic', engineering:'academic', law:'classic', marketing:'modern' };
+      const filterKey = map[category] || 'all';
+      // trigger the template filter
+      const filterBtns = document.querySelectorAll('.filter-btn');
+      filterBtns.forEach(fb => {
+        if (fb.textContent.toLowerCase().includes(filterKey) || (filterKey === 'all' && fb.textContent === 'All')) {
+          filterBtns.forEach(x => x.classList.remove('active'));
+          fb.classList.add('active');
+          filterTemplates(fb, filterKey === 'all' ? 'all' : filterKey);
+        }
+      });
+    }
+
+    function filterTemplates(btn, tag) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.tmpl-card').forEach(card => {
+        const tags = card.dataset.tags || '';
+        if (tag === 'all' || tags.includes(tag)) {
+          card.style.display = '';
+          setTimeout(() => { card.style.opacity = '1'; card.style.transform = ''; }, 10);
+        } else {
+          card.style.opacity = '0';
+          card.style.transform = 'scale(0.95)';
+          setTimeout(() => { card.style.display = 'none'; }, 300);
+        }
+      });
+    }
+
+    // Parallax floaters on mouse move
+    document.addEventListener('mousemove', (e) => {
+      const mx = (e.clientX / window.innerWidth - 0.5) * 20;
+      const my = (e.clientY / window.innerHeight - 0.5) * 20;
+      document.querySelectorAll('.floater').forEach((f, i) => {
+        const d = (i + 1) * 0.5;
+        f.style.transform += ` translate(${mx * d * 0.3}px, ${my * d * 0.3}px)`;
+      });
+    });
+  </script>
 </body>
-
 </html>
